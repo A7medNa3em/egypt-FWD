@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 
+ST_cardData_t G_cardData;
+ST_cardData_t *GP_cardData = &G_cardData;
+
 // This function will ask for the cardholder's name and store it into card data.
 // Cardholder name is 24 alphabetic characters string max and 20 min.
 // If the cardholder name is NULL, less than 20 characters or more than 24
@@ -137,10 +140,9 @@ EN_cardError_t getCardPAN(ST_cardData_t *cardData)
 {
     char TempToken[25];
     EN_cardError_t CardState = WRONG_EXP_DATE;
-    printf("Enter Expiry Data    : ");
+    printf("Enter PAN   : ");
     gets(TempToken);
 
-    /* Check Card expiry date is 5 characters string in the format "MM/YY", e.g "05/25". */
     if ((strlen(TempToken) >= 16) && (strlen(TempToken) <= 19))
     {
         /* True condition inset into cardData */
@@ -156,25 +158,4 @@ EN_cardError_t getCardPAN(ST_cardData_t *cardData)
     }
 
     return CardState;
-}
-
-void getCardPANTest(void)
-{
-    ST_cardData_t TestCard;
-    char tempstr[20];
-    static uint8_t CasesCount;
-    printf("Tester Name     : Ahmed Naeem \n");
-    printf("Function Name   : getCardPANTest \n\n");
-    while (1)
-    {
-        printf("Test Case %d \n", CasesCount + 1);
-        printf("Expected Result : ");
-        gets(tempstr);
-        printf("Input Data \n\t");
-        if (getCardPAN(&TestCard) == CARD_OK)
-            printf("Actual Result   : Ok Card PAN \n\n");
-        else
-            printf("Actual Result   : Error Card PAN\n\n");
-        CasesCount++;
-    }
 }

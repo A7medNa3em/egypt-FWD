@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NONSTDC_NO_WARNINGS
+
+#include "stdio.h"
 #include "app.h"
 
 int main()
@@ -24,32 +26,32 @@ void appStart(void)
     /* server module local variables */
     EN_transState_t trans_state = 0;
 
-    max_amount = setMaxAmount(terminalptr, 30000.0);
+    max_amount = setMaxAmount(GP_terminalData, 30000.0);
     while (1)
     {
         /* card module */
         do
         {
-            get_card_holder_name = getCardHolderName(cardptr);
+            get_card_holder_name = getCardHolderName(GP_cardData);
         } while (get_card_holder_name != CARD_OK);
 
         do
         {
-            get_exp_date = getCardExpiryDate(cardptr);
+            get_exp_date = getCardExpiryDate(GP_cardData);
         } while (get_exp_date != CARD_OK);
 
         do
         {
-            get_card_PAN = getCardPAN(cardptr);
+            get_card_PAN = getCardPAN(GP_cardData);
         } while (get_card_PAN != CARD_OK);
 
         /* terminal module */
         do
         {
-            transaction_date = getTransactionDate(terminalptr);
+            transaction_date = getTransactionDate(GP_terminalData);
         } while (transaction_date != TERMINAL_OK);
 
-        card_expiry = isCardExpired(cardptr, terminalptr);
+        card_expiry = isCardExpired(GP_cardData, GP_terminalData);
         if (card_expiry != TERMINAL_OK)
         {
             printf("Declined : Expired card");
@@ -59,10 +61,10 @@ void appStart(void)
 
         do
         {
-            transaction_amount = getTransactionAmount(terminalptr);
+            transaction_amount = getTransactionAmount(GP_terminalData);
         } while (transaction_amount != TERMINAL_OK);
 
-        below_max_amount = isBelowMaxAmount(terminalptr);
+        below_max_amount = isBelowMaxAmount(GP_terminalData);
         if (below_max_amount != TERMINAL_OK)
         {
             printf("Declined : Amount Exceeding Limit");
@@ -71,6 +73,6 @@ void appStart(void)
         }
 
         /* server module */
-        trans_state = recieveTransactionData(transactionsDBptr);
+        trans_state = recieveTransactionData(GP_transactionsDB);
     }
 }

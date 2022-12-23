@@ -1,7 +1,7 @@
 #ifndef APP_H
 #define APP_H
 
-#include "server.h"
+#include "Server/server.h"
 
 /* Function prototype*/
 void appStart(void);
