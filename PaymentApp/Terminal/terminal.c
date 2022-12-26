@@ -55,9 +55,6 @@ EN_terminalError_t isCardExpired(ST_cardData_t *cardData, ST_terminalData_t *ter
 {
     EN_terminalError_t state = EXPIRED_CARD;
 
-    // printf("Transaction Date %d/%d/%d \n", termData->transactionDate.tm_mday, termData->transactionDate.tm_mon, termData->transactionDate.tm_year);
-    // printf("Expiration  Date %d/%d/%d \n", cardData->cardExpirationDate.Day, cardData->cardExpirationDate.Month, cardData->cardExpirationDate.Year);
-
     if (cardData->cardExpirationDate.Year > (termData->transactionDate.tm_year))
     {
         state = TERMINAL_OK;

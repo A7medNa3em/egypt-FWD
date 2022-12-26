@@ -196,7 +196,7 @@ EN_serverError_t saveTransaction(ST_transaction_t *transData)
 
 void listSavedTransactions(void)
 {
-    printf("#########################");
+    printf("####################################");
     printf("\n");
     printf("Transaction Sequence Number: %ld", transaction_reference->transactionSequenceNumber);
     printf("\n");
@@ -233,6 +233,7 @@ void listSavedTransactions(void)
     printf("\n");
     printf("PAN: %s", transaction_reference->cardHolderData.primaryAccountNumber);
     printf("\n");
+
     printf("Card Expiration Date: %d/%d/%d", transaction_reference->cardHolderData.cardExpirationDate.Day, transaction_reference->cardHolderData.cardExpirationDate.Month, transaction_reference->cardHolderData.cardExpirationDate.Year);
     printf("\n");
     printf("#########################");

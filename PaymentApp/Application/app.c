@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-#define _CRT_NONSTDC_NO_WARNINGS
 
 #include "stdio.h"
 #include "app.h"
@@ -55,7 +53,7 @@ void appStart(void)
         if (card_expiry != TERMINAL_OK)
         {
             printf("Declined : Expired card");
-            printf("\n");
+            printf("#####################################\n");
             continue;
         }
 
@@ -68,7 +66,8 @@ void appStart(void)
         if (below_max_amount != TERMINAL_OK)
         {
             printf("Declined : Amount Exceeding Limit");
-            printf("\n");
+            printf("#####################################\n");
+
             continue;
         }
 

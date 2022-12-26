@@ -45,27 +45,6 @@ EN_cardError_t getCardHolderName(ST_cardData_t *cardData)
     return CardState;
 }
 
-void getCardHolderNameTest(void)
-{
-    ST_cardData_t TestCard;
-    char tempstr[30];
-    static uint8_t CasesCount;
-    printf("Tester Name     : Ahmed Naeem \n");
-    printf("Function Name   : getCardHolderName \n\n");
-    while (1)
-    {
-        printf("Test Case %d \n", CasesCount + 1);
-        printf("Expected Result : ");
-        gets(tempstr);
-        printf("Input Data \n\t");
-        if (getCardHolderName(&TestCard) == CARD_OK)
-            printf("Actual Result   : Ok Card Holder Name \n\n");
-        else
-            printf("Actual Result   : Error Card Holder Name \n\n");
-        CasesCount++;
-    }
-}
-
 // This function will ask for the card expiry date and store it in card data.
 // (Modified) Card expiry date is Date_t DD/MM/YYYY.
 // If the card expiry date is NULLor has the wrong format
@@ -109,27 +88,6 @@ EN_cardError_t getCardExpiryDate(ST_cardData_t *cardData)
     }
 
     return CardState;
-}
-
-void getCardExpiryDateTest(void)
-{
-    ST_cardData_t TestCard;
-    char tempstr[10];
-    static uint8_t CasesCount;
-    printf("Tester Name     : Ahmed Naeem \n");
-    printf("Function Name   : getCardExpiryDate \n\n");
-    while (1)
-    {
-        printf("Test Case %d \n", CasesCount + 1);
-        printf("Expected Result : ");
-        gets(tempstr);
-        printf("Input Data \n\t");
-        if (getCardExpiryDate(&TestCard) == CARD_OK)
-            printf("Actual Result   : Ok Card Expire Date  \n\n");
-        else
-            printf("Actual Result   : Error Card Expire Date \n\n");
-        CasesCount++;
-    }
 }
 
 // This function will ask for the card's Primary Account Number and store it in card data.

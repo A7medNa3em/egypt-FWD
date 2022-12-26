@@ -6,7 +6,6 @@
 #include "Terminal/terminal.h"
 
 #define number_of_accounts 10
-
 /* Typedef declarations */
 typedef enum EN_transState_t
 {
@@ -58,5 +57,4 @@ void listSavedTransactions(void);
 
 /*extern for global variables*/
 extern ST_transaction_t *GP_transactionsDB;
-
 #endif
