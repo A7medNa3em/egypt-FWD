@@ -56,8 +56,8 @@ EN_cardError_t getCardExpiryDate(ST_cardData_t *cardData)
     EN_cardError_t CardState = WRONG_EXP_DATE;
 
     printf("Enter Expiry Data : \n");
-    printf("Day   : ");
-    gets(TempToken);
+    // printf("Day   : ");
+    // gets(TempToken);
     TempDate.Day = atoi(TempToken);
     printf("Month : ");
     gets(TempToken);
@@ -73,7 +73,7 @@ EN_cardError_t getCardExpiryDate(ST_cardData_t *cardData)
     // TempDate.Year = (uint8_t)(TempToken[3] - 48) * 10 + (uint8_t)(TempToken[4] - 48);
 
     /* Check Card expiry date is 5 characters string in the format "MM/YY", e.g "05/25". */
-    if ((TempDate.Day > 0) && (TempDate.Day <= 31) && (TempDate.Month <= 12) && (TempDate.Month > 0))
+    if ((TempDate.Month <= 12) && (TempDate.Month > 0))
     {
         /* True condition inset into cardData */
         cardData->cardExpirationDate.Day = TempDate.Day;

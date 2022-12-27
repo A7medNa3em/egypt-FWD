@@ -1,5 +1,9 @@
 
 #include "Test.h"
+#include "Terminal/terminal.h"
+#include "Card/card.h"
+#include "Server/server.h"
+#include <stdio.h>
 
 void getCardHolderNameTest(void)
 {
@@ -172,6 +176,40 @@ void isBelowMaxAmount_setMaxAmount_Test(void)
         }
         else
             printf("Actual Result   : Error ->  EXCEED_MAX_AMOUNT \n\n");
+        CasesCount++;
+    }
+}
+
+void recieveTransactionDataTest(void)
+{
+}
+
+void isBlockedAccountTest(void)
+{
+    ST_accountsDB_t *tempAccont;
+    char tempstr[20];
+    static uint8_t CasesCount;
+    printf("Tester Name     : Ahmed Naeem \n");
+    printf("Function Name   :isBlockedAccount \n");
+    while (1)
+    {
+        printf("Test Case %d \n", CasesCount + 1);
+        printf("Expected Result : ");
+        gets(tempstr);
+        printf("Input Data  RUNNING 0  BLOCKED 1  \n\t");
+        //      RUNNING,
+        // BLOCKED
+        gets(tempstr);
+        tempAccont->state = atoi(tempstr);
+        printf("Actual Result   : Ok Account is NOT Blocked \n\n");
+        if (isBlockedAccount(tempAccont) == SERVER_OK)
+        {
+        }
+        else
+        {
+            printf("Actual Result   : Ok Account is Blocked \n\n");
+        }
+
         CasesCount++;
     }
 }

@@ -50,22 +50,27 @@ EN_transState_t recieveTransactionData(ST_transaction_t *transData)
     {
         trans_error_type = FRAUD_CARD;
         transaction_state = FRAUD_CARD;
+        // printf("Test Result   : Sad case Account is Not Valid \n\n");
     }
     else if (account_state == BLOCKED_ACCOUNT)
     {
         trans_error_type = DECLINED_STOLEN_CARD;
         transaction_state = DECLINED_STOLEN_CARD;
+        // printf("Actual Result   : Sad case Account is  Blocked \n\n");
     }
     else if (amount_availability == LOW_BALANCE)
     {
         trans_error_type = DECLINED_INSUFFECIENT_FUND;
         transaction_state = DECLINED_INSUFFECIENT_FUND;
+        // printf("Test Result   : Sad case --> Low Balance \n\n");
     }
     else
     {
         trans_error_type = APPROVED;
         transaction_state = APPROVED;
         valid_account_ptr->balance = valid_account_ptr->balance - GP_terminalData->transAmount;
+
+        // printf("Test Result   : Happy case --> Account is Found and Available Balance \n\n");
     }
 
     transaction_saved = saveTransaction(save_transaction_ptr);
@@ -73,6 +78,11 @@ EN_transState_t recieveTransactionData(ST_transaction_t *transData)
     {
         trans_error_type = INTERNAL_SERVER_ERROR;
         transaction_state = INTERNAL_SERVER_ERROR;
+        // printf("Test Result   : Sad case --> Transcation can not be saved \n\n");
+    }
+    else
+    {
+        // printf("Test Result   : Happy case --> Transcation is saved correctly \n\n");
     }
 
     return trans_error_type;

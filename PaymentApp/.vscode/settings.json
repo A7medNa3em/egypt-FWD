@@ -2,6 +2,7 @@
     "files.associations": {
         "stdlib.h": "c",
         "card.h": "c",
-        "time.h": "c"
+        "time.h": "c",
+        "server.h": "c"
     }
 }

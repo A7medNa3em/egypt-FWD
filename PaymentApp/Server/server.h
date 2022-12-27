@@ -40,7 +40,7 @@ typedef enum EN_accountState_t
     BLOCKED
 } EN_accountState_t;
 
-typedef struct ST_accountsDB_t
+typedef struct ST_accountsDB
 {
     float balance;
     EN_accountState_t state;
