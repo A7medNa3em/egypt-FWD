@@ -10,6 +10,12 @@
 #define EXTI_H_
 
 
+#include "../LIB/atmega32.h"
+#include "../LIB/stdtypes.h"
+#include "../LIB/bitmath.h"
+
+
+
 /***************** Interrupt Vectors ************************/
 /*
 

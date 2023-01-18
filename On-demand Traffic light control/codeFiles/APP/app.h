@@ -9,9 +9,9 @@
 #ifndef APP_H_
 #define APP_H_
 
-#include "stdtypes.h"
-#include "atmega32.h"
-#include "DIO/DIO.h"
+#include "../LIB/stdtypes.h"
+#include "../LIB/atmega32.h"
+#include "../HAL/LED/led.h"
 
 
 void APP_Init();

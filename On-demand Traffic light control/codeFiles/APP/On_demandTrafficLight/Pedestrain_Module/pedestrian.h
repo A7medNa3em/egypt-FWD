@@ -1,7 +1,9 @@
 #ifndef PEDESTRIAN_H
 #define PEDESTRIAN_H
 
-#include "state.h"
+#include "../APP/On_demandTrafficLight/state.h"
+#include "../HAL/LED/led.h"
+#include "../HAL/TimeServices/timeservice.h"
 
 /* Pedestrian Mode states */
 

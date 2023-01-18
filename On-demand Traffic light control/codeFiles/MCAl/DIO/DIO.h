@@ -2,6 +2,12 @@
 #define DIO_H
 
 
+#include "../LIB/atmega32.h"
+#include "../LIB/stdtypes.h"
+#include "../LIB/bitmath.h"
+
+
+
 typedef enum
 {
 	ACTIVE_LOW,
@@ -46,6 +52,7 @@ typedef enum
 {
 	DIO_OK,
 	DIO_UNCONFIGURED,
+	DIO_ERROR,
 } DIO_Error_t;
 
 
@@ -58,14 +65,14 @@ typedef struct
 } PinConfig_t;
 
 /* MCAL_DIO_InitPin: Initialize the DIO pin (direction , pull) */
-void MCAL_DIO_InitPin(PIN_t pinx, PORT_t portx, DIRECTION_t dir , PULLUP_t pullup);
+DIO_Error_t MCAL_DIO_InitPin(PIN_t pinx, PORT_t portx, DIRECTION_t dir , PULLUP_t pullup);
 //void MCAL_DIO_InitPin(PinConfig_t* pinx);
 
 /* DIO_Init: Initialize the DIO pins in Pin configurations array */
 void MCAL_DIO_Init();
 
 /* DIO_WritePin: Write High/Low on DIO pin */
-void MCAL_DIO_WritePin(PIN_t pin, PORT_t port, STATE_t state);
+DIO_Error_t MCAL_DIO_WritePin(PIN_t pin, PORT_t port, STATE_t state);
 
 /* DIO_Write: Write High/Low on DIO pin */
 DIO_Error_t MCAL_DIO_Write(PIN_t pin, PORT_t port, STATE_t state);
@@ -77,6 +84,6 @@ STATE_t MCAL_DIO_ReadPin(PIN_t pin, PORT_t port);
 DIO_Error_t MCAL_DIO_Read(PIN_t pin, PORT_t port, STATE_t *pinstate);
 
 /* MCAL_DIO_TogglePin: convert state of DIO pin  */
-void MCAL_DIO_TogglePin(PIN_t pin, PORT_t port);
+DIO_Error_t MCAL_DIO_TogglePin(PIN_t pin, PORT_t port);
 
 #endif

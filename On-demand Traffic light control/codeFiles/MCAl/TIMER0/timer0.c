@@ -5,11 +5,13 @@
  *  Author: Ahmed Naeem
  */ 
 
-#include "atmega32.h"
-#include "stdtypes.h"
-#include "bitmath.h"
 #include "timer0.h"
 #include "timer0_cfg.h"
+
+
+/*----------------------------------------------------
+				 Timer0 ISR CallBack Functions 
+-----------------------------------------------------*/
 
 /* Timer 0 overflow ISR call back function*/
 void (*TIMER0_OVF_CallBackFun)(void) ;
@@ -26,10 +28,10 @@ void (*TIMER0_COMP_CallBackFun)(void) ;
 */
 void TIMER0_Init()
 {
- /* 1- Set mode */
+	/* 1- Set mode */
 	CLR_BIT(TCCR0 , 3);
 	CLR_BIT(TCCR0 , 6);
-	/* first bit at bit6 WGM00 */
+	/*first bit at bit6 WGM00 */
 	TCCR0 |= ((TIM0_MOD << 6) & 0x40);
 	/* second bit at bit3 WGM01 */
 	TCCR0 |= (((TIM0_MOD >> 1) << 3) & 0x08);
@@ -39,7 +41,6 @@ void TIMER0_Init()
 	#if TIMER0_ENABLE_INTERRUPT
 	/* Enable Global Interrupt*/
 	GIE_ENABLE();
-	/* check mode */
 	/* TOV0 enable */
 	SET_BIT(TIMSK ,0);
 	/* OCF0 enable */
@@ -49,21 +50,19 @@ void TIMER0_Init()
 }
 
 
-
-
 /*
 *
 *		 @fun		  : TIMER0_Start
-*		 @Description : start timer 0 by enable clock
-*						based on TIM0_CLOCK_SELECT macro
+*		 @Description : start timer 0 by Intial value T0value
+*						enable clock based on TIM0_CLOCK_SELECT MACRO
 *
 */
-void TIMER0_Start()
+void TIMER0_Start(uint8 T0value)
 {
 	/* clear first 3 bits in TCCR0 then put value of TIM0_CLOCK_SELECT */
-	
 	TCCR0 &= ~(0x07);
 	TCCR0 |= (TIM0_CLOCK_SELECT & 0x07);
+	TCNT0 = T0value;
 	
 }
 
@@ -77,7 +76,7 @@ void TIMER0_Start()
 */
 void TIMER0_Stop()
 {
-	/* clear first 3 bits in TCCR0 */
+	/*Diable clock by clear first 3 bits in TCCR0 */
 	TCCR0 &= ~(0xf7);
 }
 
@@ -97,67 +96,39 @@ void TIMER0_ReadTimerValue(uint8 * value)
 
 /*
 *
-*		 @fun			 : TIMER0_SetTimerValue
-*		 @Description	 : Set TCNT0 value
-*
-*/
-void TIMER0_SetTimerValue(uint8 value)
-{
-	TCNT0 = value;
-}
-
-
-
-
-
-/*
-*
-*		 @fun			 : TIMER0_SetBusyWait_us
+*		 @fun			 : TIMER0_Calculate
 *		 @Description	 : Generate rime delay (busy wait period) in micro second
 *						   Max period for single over flow in case of 8MHz
 *                           ------------------------------------
-*						   Pre-scaler          Max period 
+*						   Pre-scaler         Tick time 
 *						   ------------------------------------
-*						   8                  256  
-*						   64				  2_048
-*						   256				  16_384
-*						   1024               65_536
+*						   8                   1 us
+*						   64				   8 us
+*						   256				   32 us
+*						   1024                128 us
 *						   --------------------------------------
-*		@PRECONDTION  : TIMER CLK SOURCE IS clock with prescaler geater than 1
+*		@PRECONDTION  : TIMER CLK SOURCE IS clock with prescaler greater than 1
 *
 */
-void TIMER0_SetBusyWait_us(uint64 period)
+#define TickTime  ((TIM0_PRESCALER * 1000000U) / SYS_CLK) 
+uint32 TIMER0_Calculate(uint64 period, uint8* T0preload)
 {
-	uint32  NumOfOverflows  ;
-	volatile uint32 TickTime ;
-	uint8 preload;
+	uint32  NumOfOverflows =0  ;
+	
 	uint64 DesiredTicks, requiredNumOfOverflows;
-	
-	
-	
 	/* Calculate tick time*/
-	TickTime = ((TIM0_PRESCALER * 1000000U) / SYS_CLK) ;
+	
 	DesiredTicks =(uint64) period / TickTime ;
 	
 	if(DesiredTicks < TIMER0_MAX_TICKS)
 	{
-		TCNT0 = TIMER0_MAX_TICKS - DesiredTicks;
-		
-		/* waiting TOV0 flag */
-		while(GET_BIT(TIFR ,0) == 1);
-		/* Set TOV0 flag to clear*/
-		SET_BIT(TIFR ,0 );
-		
+		*T0preload = TIMER0_MAX_TICKS - DesiredTicks;
+		NumOfOverflows=0;
 	}
 	else if(DesiredTicks == TIMER0_MAX_TICKS)
 	{
-		TCNT0 = 0;
-		
-		/* waiting TOV0 flag */
-		while(GET_BIT(TIFR ,0) == 1);
-		/* Set TOV0 flag to clear*/
-		SET_BIT(TIFR ,0 );
-		
+		*T0preload = 0;
+		NumOfOverflows=0;
 	}
 	else if(DesiredTicks >TIMER0_MAX_TICKS)
 	{
@@ -166,19 +137,54 @@ void TIMER0_SetBusyWait_us(uint64 period)
 		
 		NumOfOverflows = requiredNumOfOverflows /100 ;
 		
-		/*Method 2 --> preload for only first overflow
-			fraction = requiredNumOfOverflows - NumOfOverflows *100
-		*/
-		
-		// Method 1  --> prload for every preload overflow
+		// Method 1  --> prload for every *T0preload overflow
 		if((requiredNumOfOverflows - NumOfOverflows *100 ) > 0)
 		{
 			NumOfOverflows++;
 		}
+		// *T0preload = TIMER0_MAX_TICKS - (fraction *  TIMER0_MAX_TICKS /100 )
+		*T0preload = TIMER0_MAX_TICKS - DesiredTicks/NumOfOverflows ; 
+	}
+	
+	return NumOfOverflows;
+}
+
+
+/*
+*
+*		 @fun			 : TIMER0_SetBusyWait_us
+*		 @Description	 : Generate rime delay (busy wait period) in micro second
+*						   Max period for single over flow in case of 8MHz
+*                           ------------------------------------
+*						   Pre-scaler          Max period
+*						   ------------------------------------
+*						   8                  256    -> 1 us
+*						   64				  2_048  -> 8 us
+*						   256				  8_192  -> 32 us
+*						   1024               32_768 -> 128 us
+*						   --------------------------------------
+*		@PRECONDTION  : TIMER CLK SOURCE IS clock with prescaler geater than 1
+*
+*/
+void TIMER0_SetBusyWait_us(uint64 period)
+{
+	uint32  NumOfOverflows  ;
+	uint8 preload;
+	
+	NumOfOverflows= TIMER0_Calculate(period,&preload);
+	
+	if(NumOfOverflows == 0)
+	{
+		TCNT0 = TIMER0_MAX_TICKS - preload;
 		
-		// preload = TIMER0_MAX_TICKS - (fraction *  TIMER0_MAX_TICKS /100 )
-		preload = TIMER0_MAX_TICKS - DesiredTicks/NumOfOverflows ; 
+		/* waiting TOV0 flag */
+		while(GET_BIT(TIFR ,0) == 1);
+		/* Set TOV0 flag to clear*/
+		SET_BIT(TIFR ,0 );
 		
+	}
+	else if(NumOfOverflows > 0)
+	{
 		TCNT0 = preload;
 		
 		while(NumOfOverflows > 0)
@@ -195,7 +201,7 @@ void TIMER0_SetBusyWait_us(uint64 period)
 		}
 	}
 }
-
+/*
 void T0_delay_ms(uint64 Period)
 {
 	uint32 i;
@@ -204,7 +210,7 @@ void T0_delay_ms(uint64 Period)
 	{
 		TIMER0_SetBusyWait_us(Period);
 	}
-}
+}*/
 
 
 /*
@@ -241,9 +247,8 @@ void TIMER0_SetOutputCompareValue(uint8 value)
 /*
 *		 @fun			 : TIMER0_SetOutputComparePinMode
 *		 @Description	 : Set Output Compare Pin Mode according to @ref  TIMER0_OC0_MOd
-						   The OC0 value will not be visible on the port pin unless 
-						   the data direction for the pin is set to output
-						 
+*						   The OC0 value will not be visible on the port pin unless 
+*						   the data direction for the pin is set to output						 
 *
 */
 void TIMER0_SetOutputComparePinMode(OC0_MOd_t MODE)
@@ -266,6 +271,7 @@ void TIMER0_SetOutputComparePinMode(OC0_MOd_t MODE)
 
 
 
+/********************************************************/
 
 void __vector_10 (void) __attribute__((signal));
 void __vector_10 (void)

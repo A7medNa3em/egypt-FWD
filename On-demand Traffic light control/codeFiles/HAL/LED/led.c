@@ -5,9 +5,6 @@
  *  Author: ncm
  */ 
 
-
-#include "stdtypes.h"
-#include "DIO/DIO.h"
 #include "led.h"
 #include "led_cfg.h"
 
@@ -27,25 +24,72 @@ void LED_Init()
 }
 
 /*Write high to Led*/
-void LED_ON(LED_t led)
+LED_Error_t LED_ON(LED_t led)
 {
-	MCAL_DIO_WritePin(LedConfigs[led].ledpin,LedConfigs[led].ledport,LedConfigs[led].activestate);
+	
+	LED_Error_t LED_state = LED_ERROR;
+	if(led <LedConfigCount )
+	{
+		LED_state = LED_OK;
+		MCAL_DIO_WritePin(LedConfigs[led].ledpin,LedConfigs[led].ledport,LedConfigs[led].activestate);
+	}
+	else
+	{
+		LED_state = LED_UNCONFIGURED;
+	}
+	
+	return LED_state;
+	
 }
 
 /*Write Low to Led*/
-void LED_OFF(LED_t led)
+LED_Error_t LED_OFF(LED_t led)
 {
-	if(LedConfigs[led].activestate == ACTIVE_HIGH)
-	MCAL_DIO_WritePin(LedConfigs[led].ledpin,LedConfigs[led].ledport, LOW);
+	LED_Error_t LED_state = LED_ERROR;
+	if(led <LedConfigCount )
+	{
+		LED_state = LED_OK;
+		if(LedConfigs[led].activestate == ACTIVE_HIGH)
+		{
+		MCAL_DIO_WritePin(LedConfigs[led].ledpin,LedConfigs[led].ledport, LOW);
+		
+		}
+		else if(LedConfigs[led].activestate == ACTIVE_LOW)
+		{
+			MCAL_DIO_WritePin(LedConfigs[led].ledpin,LedConfigs[led].ledport, HIGH);
+		}
+		else
+		{
+			LED_state = LED_ERROR;
+			
+		}
+		
+	}
 	else
 	{
-	MCAL_DIO_WritePin(LedConfigs[led].ledpin,LedConfigs[led].ledport, HIGH);
-	
+		LED_state = LED_UNCONFIGURED;
+		
 	}
+	
+	return LED_state;
+	
 	
 }
 
-void LED_TOGGLE(LED_t led)
+LED_Error_t LED_TOGGLE(LED_t led)
 {
+	
+	LED_Error_t LED_state = LED_ERROR;
+	if(led <LedConfigCount )
+	{
+		LED_state = LED_OK;
 	MCAL_DIO_TogglePin(LedConfigs[led].ledpin,LedConfigs[led].ledport);
+	
+	}
+	else
+	{
+		LED_state = LED_UNCONFIGURED;
+	}
+	
+	return LED_state;
 }

@@ -1,8 +1,8 @@
-#include "TIMER0/timer0.h"
-#include "LED/led.h"
 #include "pedestrian.h"
+#include "../HAL/LED/led.h"
 
 
+#define __P__  5000
 /* module initialization*/
 void Pedestrian_Init(void)
 {
@@ -24,10 +24,13 @@ Define_State(PEDESTRIAN_Go)
 	LED_OFF(LED_5);
 	LED_OFF(LED_0);
 	LED_OFF(LED_1);
-    // busy wait 5 sec
-	T0_delay_ms(5000);
+    waitNoblock_msec(__P__);
     // transate to CAR_SteadyToStop state
+	if(TS_DONE_FLAG == 1)
+	{
     Pedestrian_State = State(PEDESTRIAN_SteadyToStop);
+	TS_DONE_FLAG=0;
+	}
 }
 Define_State(PEDESTRIAN_SteadyToStop)
 {
@@ -39,20 +42,22 @@ Define_State(PEDESTRIAN_SteadyToStop)
 	LED_OFF(LED_0);
 	
     // Pedestrian and Car Yellow Leds are blinking for 5 sec
-	for(int i=0 ; i<5; i++)
-	{
-		LED_ON(LED_1);
-		LED_ON(LED_4);
-		T0_delay_ms(500);
-		LED_OFF(LED_1);
-		LED_OFF(LED_4);
-		T0_delay_ms(500);
-	}
-	
-
-	
+	  static int i=0;
+	  waitNoblock_msec(__P__/10);
+	  if(TS_DONE_FLAG == 1)
+	  {
+		  LED_TOGGLE(LED_1);
+		  LED_TOGGLE(LED_4);
+		  i++;
+		  TS_DONE_FLAG=0;
+	  }
+	  
 	// transate to PEDESTRIAN_Waiting state
-	Pedestrian_State = State(PEDESTRIAN_Waiting);
+	if(i>10)
+	{
+		Pedestrian_State = State(PEDESTRIAN_Waiting);
+		i=0;
+	}
 	
 }
 
@@ -64,8 +69,6 @@ Define_State(PEDESTRIAN_Stop)
     // Other Leds is off
 	LED_OFF(LED_3);
 	LED_OFF(LED_3);
-    // busy wait 5 sec
-	//T0_delay_ms(5000);
 	
 }
 
@@ -81,20 +84,22 @@ Define_State(PEDESTRIAN_SteadyToGo)
 	  LED_OFF(LED_3);
 	  
      // Pedestrian and Car Yellow Leds are blinking for 5 sec
-     for(int i=0 ; i<5; i++)
-     {
-	     LED_ON(LED_1);
-	     LED_ON(LED_4);
-	     T0_delay_ms(500);
-	     LED_OFF(LED_1);
-	     LED_OFF(LED_4);
-	     T0_delay_ms(500);
-     }
+	   static int i=0;
+	   waitNoblock_msec(__P__/10);
+	  if(TS_DONE_FLAG == 1)
+	  {
+		  LED_TOGGLE(LED_1);
+		  LED_TOGGLE(LED_4);
+		  i++;
+		  TS_DONE_FLAG=0;
+	  }
    
-    // busy wait 5 sec`
-    // call Pedestrian_Done
     // transate to PEDESTRIAN_Go state
+	if(i >10 )
+	{
     Pedestrian_State = State(PEDESTRIAN_Go);
+	i=0;
+	}
 }
 Define_State(PEDESTRIAN_Waiting)
 {
@@ -102,7 +107,7 @@ Define_State(PEDESTRIAN_Waiting)
 	LED_OFF(LED_3);
 	LED_OFF(LED_4);
 	LED_ON(LED_5);
-	 Pedestrian_State = State(PEDESTRIAN_Stop);
+	Pedestrian_State = State(PEDESTRIAN_Stop);
 	Pedestrian_HandlingDone();
 }
 
@@ -111,6 +116,13 @@ void Pedestrian_Request(int Normal_id)
     /*If pressed when the cars' Red LED is on, the pedestrian's in PEDESTRIAN_Go state
  -If pressed when the cars' Green LED is on or the cars'
  */
-    (Normal_id == 1) ? (Pedestrian_State = State(PEDESTRIAN_Go)) : (Pedestrian_State = State(PEDESTRIAN_SteadyToGo));
-	//Pedestrian_State();
+    if ((Normal_id == 1)&&  (Pedestrian_State == State(PEDESTRIAN_Stop)))
+    {
+      (Pedestrian_State = State(PEDESTRIAN_Go)) ;
+    }else if( Pedestrian_State == State(PEDESTRIAN_Stop))
+	{
+		(Pedestrian_State = State(PEDESTRIAN_SteadyToGo));
+		
+	}
+	
 }

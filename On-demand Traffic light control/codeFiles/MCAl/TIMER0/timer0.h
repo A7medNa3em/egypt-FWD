@@ -9,9 +9,9 @@
 #ifndef TIMER_0_H_
 #define TIMER_0_H_
 
-#include "stdtypes.h"
-
-
+#include "../LIB/atmega32.h"
+#include "../LIB/stdtypes.h"
+#include "../LIB/bitmath.h"
 
 
 /*----------------------------------------------------
@@ -89,13 +89,7 @@ typedef enum
 *************************************************************************/
 
 /* Delay micro second MACRO */
-/*
-#define T0_delay_us(Period) (\
-							do{\
-							 TIMER0_Start(); \
-							 TIMER0_SetBusyWait_us(Period);\
-							 TIMER0_Stop();\
-							}while(0)) */
+
 
 /*
 *
@@ -112,11 +106,11 @@ void T0_delay_ms(uint64 Period);
 /*
 *
 *		 @fun		  : TIMER0_Start
-*		 @Description : start timer 0 by enable clock
-*						based on TIM0_CLOCK_SELECT macro
-*						
+*		 @Description : start timer 0 by Intial value T0value
+*						enable clock based on TIM0_CLOCK_SELECT MACRO
+*
 */
-void TIMER0_Start();
+void TIMER0_Start(uint8 T0value);
 
 
 /*
@@ -137,6 +131,26 @@ void TIMER0_Stop();
 *						   and stated 
 */
 void TIMER0_ReadTimerValue(uint8 * value);
+
+
+/*
+*
+*		 @fun			 : TIMER0_Calculate
+*		 @Description	 : Generate rime delay (busy wait period) in micro second
+*						   Max period for single over flow in case of 8MHz
+*                           ------------------------------------
+*						   Pre-scaler         Tick time
+*						   ------------------------------------
+*						   8                   1 us
+*						   64				   8 us
+*						   256				   32 us
+*						   1024                128 us
+*						   --------------------------------------
+*		@PRECONDTION  : TIMER CLK SOURCE IS clock with prescaler greater than 1
+*
+*/
+#define TickTime  ((TIM0_PRESCALER * 1000000U) / SYS_CLK)
+uint32 TIMER0_Calculate(uint64 period, uint8* T0preload);
 
 
 /*

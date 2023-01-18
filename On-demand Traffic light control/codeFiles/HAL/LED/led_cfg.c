@@ -4,8 +4,7 @@
  * Created: 12/31/2022 4:30:30 PM
  *  Author: Ahmed Naeem
  */ 
-#include "stdtypes.h"
-#include "DIO/DIO.h"
+
 #include "led_cfg.h"
 
 

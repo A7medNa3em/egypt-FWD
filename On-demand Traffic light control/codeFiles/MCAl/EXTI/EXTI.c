@@ -5,8 +5,7 @@
  *  Author: Ahmed Naeem
  */ 
 
-#include "atmega32.h"
-#include "bitmath.h"
+
 #include "EXTI.h"
 
 /* */

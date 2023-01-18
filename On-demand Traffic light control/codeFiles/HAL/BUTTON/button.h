@@ -11,6 +11,9 @@
 
 #include "DIO/DIO.h"
 
+#include "TIMER0/timer0.h"
+#include "EXTI/EXTI.h"
+
 
 typedef enum
 {

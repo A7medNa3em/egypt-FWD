@@ -39,7 +39,7 @@
 		TIM0_CS_EXTERNAL_F_EDGE				
 		TIM0_CS_EXTERNAL_R_EDGE				
  */     
-#define TIM0_CLOCK_SELECT		  TIM0_CS_PRESCALER_8
+#define TIM0_CLOCK_SELECT		  TIM0_CS_PRESCALER_1024
 
 
 /* Detect prescaler value*/
@@ -74,7 +74,7 @@
 	1 ----> Enabled
 	0 ----> Disabled
  */
-#define TIMER0_ENABLE_INTERRUPT     0
+#define TIMER0_ENABLE_INTERRUPT     1
 
 
 

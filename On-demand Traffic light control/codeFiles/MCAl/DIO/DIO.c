@@ -1,13 +1,12 @@
-#include "atmega32.h"
-#include "stdtypes.h"
-#include "bitmath.h"
+
 #include "DIO.h"
 #include "DIO_cfg.h"
 
 
 /* MCAL_DIO_InitPin: Initialize the DIO pin (direction , pull) */
-void MCAL_DIO_InitPin(PIN_t pinx, PORT_t portx, DIRECTION_t dir , PULLUP_t pullup)
+DIO_Error_t MCAL_DIO_InitPin(PIN_t pinx, PORT_t portx, DIRECTION_t dir , PULLUP_t pullup)
 {
+	DIO_Error_t DIO_state = DIO_OK;
         switch (portx)
         {
         case PORT_A:
@@ -70,8 +69,14 @@ void MCAL_DIO_InitPin(PIN_t pinx, PORT_t portx, DIRECTION_t dir , PULLUP_t pullu
                 SET_BIT(DDRD, pinx);
             }
             break;
+			
+			default:
+			{
+				DIO_state=DIO_ERROR ;	
+			}
         }
     
+	return DIO_state;
 }
 
 /* DIO_Init: Initialize the DIO pins in configurations array */
@@ -89,8 +94,9 @@ void MCAL_DIO_Init()
 
 
 /* DIO_WritePin: Write High/Low on DIO pin  */
-void MCAL_DIO_WritePin(PIN_t pin, PORT_t port, STATE_t state)
+DIO_Error_t MCAL_DIO_WritePin(PIN_t pin, PORT_t port, STATE_t state)
 {
+	DIO_Error_t DIO_state = DIO_OK;
 
         switch (port)
         {
@@ -125,6 +131,10 @@ void MCAL_DIO_WritePin(PIN_t pin, PORT_t port, STATE_t state)
             {
                 CLR_BIT(PORTC, pin);
             }
+			else
+			{
+				DIO_state = DIO_ERROR;
+			}
             break;
 
         case PORT_D:
@@ -137,13 +147,20 @@ void MCAL_DIO_WritePin(PIN_t pin, PORT_t port, STATE_t state)
                 CLR_BIT(PORTD, pin);
             }
             break;
+			default:
+			{
+				DIO_state = DIO_ERROR;
+			}
         }
+		
+	return DIO_state;
     
 }
 
 /* MCAL_DIO_TogglePin: convert state of DIO pin  */
-void MCAL_DIO_TogglePin(PIN_t pin, PORT_t port)
+DIO_Error_t MCAL_DIO_TogglePin(PIN_t pin, PORT_t port)
 {
+	DIO_Error_t DIO_state= DIO_OK;
 	switch (port)
 	{
 	case PORT_A:
@@ -161,7 +178,10 @@ void MCAL_DIO_TogglePin(PIN_t pin, PORT_t port)
 	case PORT_D:
 	TOGGLE_PIN(PORTD, pin);
 	break;
+	default:DIO_state= DIO_ERROR;
 	}
+	
+	return DIO_state;
 
 }
 

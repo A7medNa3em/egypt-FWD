@@ -1,7 +1,10 @@
 #ifndef NORMAL_H
 #define NORMAL_H
 
-#include "state.h"
+#include "../APP/On_demandTrafficLight/state.h"
+#include "../HAL/LED/led.h"
+#include "../HAL/TimeServices/timeservice.h"
+
 
 /* Normal Mode states */
 enum
